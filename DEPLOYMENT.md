@@ -18,54 +18,74 @@ npm run build
 npm run preview
 ```
 
-## Deployment Options
+## GitHub Pages Deployment (Recommended)
 
-### 1. Chrome OS (Recommended for Kiosk Mode)
+The project is configured for automatic deployment to GitHub Pages using GitHub Actions.
 
-**Install as PWA:**
-1. Open the app URL in Chrome
-2. Click the install icon in the address bar (or menu → "Install Weather Widget")
-3. Launch from Chrome apps or create a kiosk shortcut
+### Automatic Deployment
 
-**Kiosk Mode Setup:**
+**Setup (One-time):**
+
+1. Go to your repository on GitHub: https://github.com/tqheel/weather-widget
+2. Navigate to **Settings** → **Pages**
+3. Under **Source**, select **GitHub Actions**
+4. That's it! 
+
+**Every time you push to the `master` branch:**
+- GitHub Actions automatically builds the project
+- Deploys to GitHub Pages
+- Your site will be live at: https://tqheel.github.io/weather-widget/
+
+**Check deployment status:**
+- Go to **Actions** tab in your GitHub repository
+- View the "Deploy to GitHub Pages" workflow
+- Green checkmark = successful deployment
+
+### Manual Deployment (Alternative)
+
+If you prefer to deploy manually:
+
 ```bash
-# Launch in kiosk mode
-google-chrome --kiosk --app=http://localhost:3000
+# Build the project
+npm run build
+
+# Deploy using gh-pages package
+npm install -g gh-pages
+gh-pages -d dist
 ```
 
-For permanent kiosk:
-- Use Chrome OS Kiosk Apps management
-- Set the PWA as the kiosk app
-- Configure auto-launch on boot
+**Your site will be at:** https://tqheel.github.io/weather-widget/
 
-### 2. Static Hosting (Netlify, Vercel, GitHub Pages)
+## Other Deployment Options
 
-**Netlify:**
+### 1. Netlify
+
+**Via Netlify CLI:**
 ```bash
-# Install Netlify CLI
 npm install -g netlify-cli
-
-# Deploy
+npm run build
 netlify deploy --prod --dir=dist
 ```
 
-**Vercel:**
-```bash
-# Install Vercel CLI
-npm install -g vercel
+**Via Netlify UI:**
+1. Connect your GitHub repository
+2. Build command: `npm run build`
+3. Publish directory: `dist`
+4. Deploy!
 
-# Deploy
+### 2. Vercel
+
+```bash
+npm install -g vercel
+npm run build
 vercel --prod
 ```
 
-**GitHub Pages:**
-```bash
-# Build
-npm run build
-
-# Push dist/ to gh-pages branch
-git subtree push --prefix dist origin gh-pages
-```
+**Or connect via Vercel dashboard:**
+1. Import your GitHub repository
+2. Framework: Vite
+3. Build command: `npm run build`
+4. Output directory: `dist`
 
 ### 3. Self-Hosted
 
@@ -96,7 +116,35 @@ server {
 }
 ```
 
+### 4. Chrome OS Kiosk Mode
+
+**Local deployment:**
+```bash
+npm run dev
+google-chrome --kiosk --app=http://localhost:3000
+```
+
+**Production deployment:**
+```bash
+google-chrome --kiosk --app=https://tqheel.github.io/weather-widget/
+```
+
 ## Configuration
+
+### Base URL
+
+The project is configured for GitHub Pages with base URL `/weather-widget/`.
+
+If deploying elsewhere, update `vite.config.js`:
+
+```javascript
+export default defineConfig({
+  base: '/',  // For root domain
+  // or
+  base: '/your-path/',  // For subdirectory
+  ...
+});
+```
 
 ### Environment Variables
 
@@ -110,73 +158,106 @@ VITE_WEATHERAPI_KEY=your_key_here
 VITE_WEATHER_API_BASE=https://api.weather.gov
 ```
 
-### Kiosk Settings
-
-Edit `index.html` to set default values:
-- Refresh interval (line with `value="15"`)
-- Initial theme/display settings
-
-### CORS Considerations
-
-If deploying to a domain different from localhost:
-- Weather.gov API: No CORS issues
-- IP-API.com: May need to use HTTPS version for production
-- RainViewer: No CORS issues
-
-For production, consider:
-1. Using HTTPS for all API calls
-2. Implementing a backend proxy for sensitive APIs
-3. Rate limiting to prevent API quota exhaustion
-
 ## PWA Installation
 
-The app is installable as a PWA when served over HTTPS. Users can:
+The app is installable as a PWA when served over HTTPS:
+
+**GitHub Pages:** ✅ Automatic HTTPS
+**Netlify/Vercel:** ✅ Automatic HTTPS
+**Custom domain:** Configure SSL certificate
+
+Users can then:
 1. Install from browser (Chrome, Edge, Safari on iOS)
 2. Add to home screen (mobile)
 3. Run as standalone app
 
+## CORS Considerations
+
+All APIs used are CORS-friendly:
+- ✅ Weather.gov API - No CORS issues
+- ✅ RainViewer - No CORS issues
+- ⚠️ IP-API.com - HTTP works for testing, HTTPS for production
+
+**For production with HTTPS:**
+Update `services/location.js` line 33:
+```javascript
+const response = await fetch('https://ip-api.com/json/...');
+// Change from http:// to https://
+```
+
+Note: HTTPS version of ip-api.com requires a paid plan. For free tier, you can:
+1. Use browser geolocation as primary (more accurate anyway)
+2. Set a default location
+3. Allow users to enter location manually
+
 ## Monitoring
 
-Recommended monitoring for production:
-- API rate limits (Weather.gov, RainViewer)
-- Cache hit rates
-- Location detection failures
-- Service worker updates
+**GitHub Pages:**
+- View deployment logs in Actions tab
+- Check Pages settings for deployment status
+- Monitor via GitHub status page
+
+**Performance:**
+- Lighthouse score in Chrome DevTools
+- Bundle analyzer: `npm run build -- --mode analyze`
+- Network tab to check API response times
 
 ## Updates
 
-To update the deployed app:
+**GitHub Pages (automatic):**
 ```bash
-# Pull latest changes
-git pull
-
-# Rebuild
-npm run build
-
-# Redeploy (depends on hosting platform)
-# The service worker will automatically update clients
+git add .
+git commit -m "Update message"
+git push origin master
+# GitHub Actions deploys automatically
 ```
+
+**Manual deployments:**
+```bash
+npm run build
+# Then deploy using your chosen method
+```
+
+The service worker will automatically update clients on next visit.
 
 ## Troubleshooting
 
-**Location detection fails:**
-- Check browser console for errors
-- Verify network access to ip-api.com
-- Fallback to manual location entry (future feature)
+**Deployment fails:**
+- Check GitHub Actions logs for errors
+- Verify `package.json` has all dependencies
+- Ensure Node version matches (20.x recommended)
 
-**Weather data not loading:**
-- Weather.gov API only works for US locations
-- Check API status at status.weather.gov
-- Review browser console for CORS errors
+**404 errors on GitHub Pages:**
+- Verify `base` in `vite.config.js` matches repo name
+- Check that GitHub Pages source is set to "GitHub Actions"
+- Wait a few minutes after deployment
 
-**Radar not animating:**
-- Check RainViewer API status
-- Verify network access
-- Check browser console for loading errors
+**PWA not installing:**
+- Must be served over HTTPS
+- Check manifest.json is accessible
+- Verify service worker is registered (check DevTools → Application)
+
+**API errors:**
+- Weather.gov works only for US locations
+- Check browser console for CORS errors
+- Verify network access to APIs
 
 ## Security Notes
 
-- All API keys should be stored in environment variables
+- All API keys should be in environment variables
 - Never commit `.env` to version control
-- Consider rate limiting for public deployments
+- GitHub Pages is public - don't store secrets
 - Use HTTPS in production for PWA features
+- Rate limit API calls to avoid quotas
+
+## Performance Tips
+
+**For faster deployments:**
+- Use `npm ci` instead of `npm install` (in CI)
+- Enable caching in GitHub Actions (already configured)
+- Minimize bundle size with code splitting if needed
+
+**For better user experience:**
+- Set proper cache headers (automatic with GitHub Pages)
+- Enable service worker caching (already implemented)
+- Use CDN if high traffic expected (Netlify/Vercel provide this)

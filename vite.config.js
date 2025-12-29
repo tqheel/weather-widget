@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/weather-widget/',
   publicDir: 'public',
   build: {
     outDir: 'dist',
