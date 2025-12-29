@@ -2,6 +2,7 @@ import './style.css';
 import { WeatherService } from './services/weather.js';
 import { LocationService } from './services/location.js';
 import { RadarService } from './services/radar.js';
+import { WeatherDetailsManager } from './services/details.js';
 
 class WeatherWidget {
   constructor() {
@@ -23,6 +24,7 @@ class WeatherWidget {
       weatherContent: document.getElementById('weather-content'),
       locationName: document.getElementById('location-name'),
       temp: document.getElementById('temp'),
+      feelsLike: document.getElementById('feels-like'),
       conditions: document.getElementById('conditions'),
       wind: document.getElementById('wind'),
       forecastGrid: document.getElementById('forecast-grid'),
@@ -31,8 +33,27 @@ class WeatherWidget {
       radarTimeline: document.getElementById('radar-timeline'),
       radarTime: document.getElementById('radar-time'),
       refreshBtn: document.getElementById('refresh-btn'),
-      refreshIntervalInput: document.getElementById('refresh-interval')
+      refreshIntervalInput: document.getElementById('refresh-interval'),
+      // Detail card elements
+      detailTemp: document.getElementById('detail-temp'),
+      detailTempTrend: document.getElementById('detail-temp-trend'),
+      detailFeels: document.getElementById('detail-feels'),
+      detailFeelsInfo: document.getElementById('detail-feels-info'),
+      detailWindSpeed: document.getElementById('detail-wind-speed'),
+      detailWindGust: document.getElementById('detail-wind-gust'),
+      detailHumidity: document.getElementById('detail-humidity'),
+      detailDewpoint: document.getElementById('detail-dewpoint'),
+      detailUV: document.getElementById('detail-uv'),
+      detailUVLevel: document.getElementById('detail-uv-level'),
+      detailPrecip: document.getElementById('detail-precip'),
+      detailPrecipInfo: document.getElementById('detail-precip-info'),
+      detailVisibility: document.getElementById('detail-visibility'),
+      detailVisibilityLevel: document.getElementById('detail-visibility-level'),
+      detailPressure: document.getElementById('detail-pressure'),
+      detailPressureTrend: document.getElementById('detail-pressure-trend')
     };
+    
+    this.detailsManager = new WeatherDetailsManager(this.elements);
   }
 
   attachEventListeners() {
@@ -79,8 +100,35 @@ class WeatherWidget {
   displayWeather(data) {
     this.elements.locationName.textContent = data.location.name;
     this.elements.temp.textContent = Math.round(data.current.temperature);
+    
+    // Display feels like temperature
+    const feelsLike = Math.round(data.current.feelsLike);
+    const actualTemp = Math.round(data.current.temperature);
+    
+    console.log('Temperature display:', {
+      actual: actualTemp,
+      feelsLike: feelsLike,
+      difference: Math.abs(feelsLike - actualTemp)
+    });
+    
+    // Only show if element exists and difference is significant
+    if (this.elements.feelsLike) {
+      if (Math.abs(feelsLike - actualTemp) >= 3) {
+        this.elements.feelsLike.textContent = `Feels like ${feelsLike}°F`;
+        console.log('Displaying feels like temperature');
+      } else {
+        this.elements.feelsLike.textContent = '';
+        console.log('Not showing feels like (difference < 3°F)');
+      }
+    }
+    
     this.elements.conditions.textContent = data.current.shortForecast;
     this.elements.wind.textContent = `Wind: ${data.current.windSpeed} ${data.current.windDirection}`;
+    
+    // Update detail cards
+    if (this.detailsManager) {
+      this.detailsManager.update(data);
+    }
     
     this.displayForecast(data.forecast);
   }

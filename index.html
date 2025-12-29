@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Real-time weather widget with radar">
   <meta name="theme-color" content="#1e40af">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="manifest" href="/manifest.json">
   <title>Weather Widget</title>
 </head>
@@ -28,9 +29,86 @@
             <span id="temp" class="temp-value">--</span>
             <span class="temp-unit">°F</span>
           </div>
+          <div class="feels-like">
+            <span id="feels-like">Feels like --°F</span>
+          </div>
           <div class="conditions">
             <p id="conditions">--</p>
             <p id="wind">--</p>
+          </div>
+        </section>
+
+        <section class="weather-details">
+          <h3>Weather Details</h3>
+          <div class="details-grid">
+            <div class="detail-card">
+              <div class="detail-label">Temperature</div>
+              <div class="detail-value" id="detail-temp">--°</div>
+              <div class="detail-trend" id="detail-temp-trend">--</div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-label">Feels like</div>
+              <div class="detail-value" id="detail-feels">--°</div>
+              <div class="detail-info" id="detail-feels-info">--</div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-label">Wind</div>
+              <div class="detail-visual">
+                <canvas id="wind-compass" width="100" height="100"></canvas>
+              </div>
+              <div class="detail-value" id="detail-wind-speed">-- mph</div>
+              <div class="detail-info" id="detail-wind-gust">--</div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-label">Humidity</div>
+              <div class="detail-visual">
+                <div class="humidity-bars" id="humidity-bars"></div>
+              </div>
+              <div class="detail-value" id="detail-humidity">--%</div>
+              <div class="detail-info" id="detail-dewpoint">Dew point: --°</div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-label">UV Index</div>
+              <div class="detail-visual">
+                <div class="uv-gauge">
+                  <div class="uv-arc"></div>
+                  <div class="uv-indicator" id="uv-indicator"></div>
+                </div>
+              </div>
+              <div class="detail-value" id="detail-uv">--</div>
+              <div class="detail-info" id="detail-uv-level">--</div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-label">Precipitation</div>
+              <div class="detail-visual">
+                <div class="precip-gauge" id="precip-gauge"></div>
+              </div>
+              <div class="detail-value" id="detail-precip">-- in</div>
+              <div class="detail-info" id="detail-precip-info">In next 24h</div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-label">Visibility</div>
+              <div class="detail-visual">
+                <div class="visibility-bars" id="visibility-bars"></div>
+              </div>
+              <div class="detail-value" id="detail-visibility">-- mi</div>
+              <div class="detail-info" id="detail-visibility-level">--</div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-label">Pressure</div>
+              <div class="detail-visual">
+                <canvas id="pressure-chart" width="120" height="40"></canvas>
+              </div>
+              <div class="detail-value" id="detail-pressure">-- in</div>
+              <div class="detail-info" id="detail-pressure-trend">--</div>
+            </div>
           </div>
         </section>
 

@@ -90,15 +90,57 @@ export class WeatherService {
 
     const obsData = await obsResponse.json();
     const props = obsData.properties;
+    
+    // Calculate feels-like temperature
+    const tempC = props.temperature.value;
+    const tempF = this.celsiusToFahrenheit(tempC);
+    const windSpeedMph = props.windSpeed.value ? props.windSpeed.value * 0.621371 : 0;
+    
+    let feelsLikeF = tempF;
+    
+    // Use provided windChill or heatIndex if available
+    if (props.windChill?.value !== null && props.windChill?.value !== undefined) {
+      feelsLikeF = this.celsiusToFahrenheit(props.windChill.value);
+    } else if (props.heatIndex?.value !== null && props.heatIndex?.value !== undefined) {
+      feelsLikeF = this.celsiusToFahrenheit(props.heatIndex.value);
+    } else if (tempF <= 50 && windSpeedMph > 3) {
+      // Calculate wind chill if temp is 50°F or below and wind > 3mph
+      feelsLikeF = 35.74 + (0.6215 * tempF) - (35.75 * Math.pow(windSpeedMph, 0.16)) + (0.4275 * tempF * Math.pow(windSpeedMph, 0.16));
+    } else if (tempF >= 80) {
+      // Calculate heat index if temp is 80°F or above
+      const humidity = props.relativeHumidity?.value || 50;
+      const T = tempF;
+      const RH = humidity;
+      feelsLikeF = -42.379 + 2.04901523*T + 10.14333127*RH - 0.22475541*T*RH - 0.00683783*T*T - 0.05481717*RH*RH + 0.00122874*T*T*RH + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH;
+    }
+    
+    console.log('Weather.gov observation properties:', {
+      temperature: tempC,
+      tempF: tempF,
+      windChill: props.windChill?.value,
+      heatIndex: props.heatIndex?.value,
+      windSpeedMph: windSpeedMph,
+      calculatedFeelsLike: feelsLikeF,
+      humidity: props.relativeHumidity?.value,
+      pressure: props.barometricPressure?.value
+    });
 
     return {
-      temperature: this.celsiusToFahrenheit(props.temperature.value),
+      temperature: tempF,
+      feelsLike: feelsLikeF,
       temperatureUnit: 'F',
       description: props.textDescription || 'N/A',
       shortForecast: props.textDescription || 'N/A',
-      windSpeed: props.windSpeed.value ? `${Math.round(props.windSpeed.value * 0.621371)} mph` : 'Calm',
+      windSpeed: windSpeedMph > 0 ? `${Math.round(windSpeedMph)} mph` : 'Calm',
+      windSpeedValue: windSpeedMph,
       windDirection: props.windDirection.value ? this.degreesToDirection(props.windDirection.value) : '',
+      windDirectionDegrees: props.windDirection.value || 0,
+      windGust: props.windGust?.value ? Math.round(props.windGust.value * 0.621371) : null,
       humidity: props.relativeHumidity.value ? Math.round(props.relativeHumidity.value) : null,
+      dewpoint: props.dewpoint?.value ? this.celsiusToFahrenheit(props.dewpoint.value) : null,
+      pressure: props.barometricPressure?.value ? (props.barometricPressure.value / 3386.39).toFixed(2) : null,
+      visibility: props.visibility?.value ? (props.visibility.value / 1609.34).toFixed(1) : null,
+      cloudCover: props.cloudLayers?.[0]?.amount || 'Unknown',
       timestamp: props.timestamp
     };
   }

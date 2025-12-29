@@ -70,13 +70,13 @@ export class RadarService {
     const tileY = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
     
     // Create a simple grid of tiles centered on location
-    let tilesHTML = '<div style="display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; height: 100%;">';
+    let tilesHTML = '<div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); width: 100%; height: 100%;">';
     
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         const x = tileX + dx;
         const y = tileY + dy;
-        tilesHTML += `<div style="background-image: url('https://tile.openstreetmap.org/${zoom}/${x}/${y}.png'); background-size: cover; background-position: center;"></div>`;
+        tilesHTML += `<div style="background-image: url('https://tile.openstreetmap.org/${zoom}/${x}/${y}.png'); background-size: 100% 100%; background-repeat: no-repeat;"></div>`;
       }
     }
     
@@ -103,21 +103,39 @@ export class RadarService {
     const tileX = Math.floor((lon + 180) / 360 * Math.pow(2, zoom));
     const tileY = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
     
-    // Load and display radar tile
-    const radarTileURL = radarURL.replace('{z}', zoom).replace('{x}', tileX).replace('{y}', tileY);
+    // Set canvas size
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 0.6;
     
-    // Create image overlay
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.globalAlpha = 0.7;
-      ctx.drawImage(img, canvas.width / 3, canvas.height / 3, canvas.width / 3, canvas.height / 3);
-    };
-    img.src = radarTileURL;
+    // Load 3x3 grid of radar tiles
+    const tileSize = 256;
+    const gridSize = canvas.width / 3;
+    let loadedTiles = 0;
+    const totalTiles = 9;
+    
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        const x = tileX + dx;
+        const y = tileY + dy;
+        const radarTileURL = radarURL.replace('{z}', zoom).replace('{x}', x).replace('{y}', y);
+        
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const destX = (dx + 1) * gridSize;
+          const destY = (dy + 1) * gridSize;
+          ctx.drawImage(img, destX, destY, gridSize, gridSize);
+          loadedTiles++;
+        };
+        img.onerror = () => {
+          loadedTiles++;
+        };
+        img.src = radarTileURL;
+      }
+    }
   }
 
   setFrame(index) {

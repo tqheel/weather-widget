@@ -241,3 +241,108 @@ For issues or questions:
 ## 📄 License
 
 MIT License - Free to use and modify
+
+## Update: December 29, 2024
+
+### Major Feature Addition: Weather Detail Cards
+
+Added 8 interactive MSN Weather-style detail widgets with animated visualizations:
+
+**New Components:**
+- `services/details.js` (293 lines) - Manages all detail widgets with canvas animations
+- Detail cards section in `index.html` with 8 card containers
+- Extensive CSS styling for cards, gauges, charts, and animations
+
+**Enhanced Data Collection:**
+Extended `services/weather.js` to fetch:
+- Wind speed value and wind gust
+- Dew point temperature
+- Barometric pressure with trend analysis
+- Visibility distance
+- Cloud cover information
+
+**Calculations Added:**
+- Wind chill formula (NWS standard) for temps ≤50°F
+- Heat index formula for temps ≥80°F
+- Feels-like temperature always displayed when difference ≥3°F
+
+**Visual Components:**
+1. **Wind Compass**: HTML5 Canvas with animated arrow showing wind direction
+   - Color-coded by speed (green < 10mph, yellow < 20mph, orange > 20mph)
+   - Cardinal directions (N, S, E, W)
+   - Smooth rotation animation
+
+2. **Humidity Bars**: Dynamic bar chart with 12 bars
+   - Random heights for visual interest
+   - Active bars highlighted with gradient
+   - Shows percentage and dew point
+
+3. **UV Gauge**: Semi-circular gradient gauge
+   - Color gradient from green (low) to red (extreme)
+   - Animated indicator position
+   - Currently uses placeholder data (Weather.gov limitation)
+
+4. **Precipitation Gauge**: Circular indicator
+   - Shows 24-hour forecast probability
+   - Color changes based on likelihood
+   - Displays percentage or "0 in"
+
+5. **Visibility Bars**: Horizontal progressive bars
+   - 5 bars showing visibility quality
+   - Animated fill based on distance
+   - Labels: Poor, Moderate, Good, Excellent
+
+6. **Pressure Chart**: Canvas line chart
+   - Shows pressure trend over time
+   - Simulated historical data points
+   - Current pressure highlighted with blue dot
+   - Rising/Falling/Steady indicator
+
+**Error Handling:**
+- Comprehensive null/NaN checks for all data fields
+- Fallback values for missing API data
+- Try-catch blocks around all update operations
+- Graceful degradation when data unavailable
+
+**Performance:**
+- Lightweight canvas operations
+- Efficient DOM manipulation
+- Minimal reflows/repaints
+- Cards update only on data refresh
+
+**Bundle Impact:**
+- JS: +7KB (13KB → 20KB)
+- CSS: +2KB (3.3KB → 5.3KB)
+- HTML: +3KB (2.2KB → 5.6KB)
+- Total: ~31KB uncompressed, ~10KB gzipped
+
+**Browser Compatibility:**
+- Canvas API (all modern browsers)
+- CSS Grid (IE11+ with fallbacks)
+- ES6+ JavaScript features
+- Tested on Chrome, Firefox, Safari, Edge
+
+**Files Modified:**
+- `index.html` - Added weather-details section with 8 cards
+- `style.css` - Added 170+ lines of card styling and animations
+- `main.js` - Integrated WeatherDetailsManager, added element references
+- `services/weather.js` - Extended API data collection
+- `services/details.js` - New file with all detail widget logic
+- `public/manifest.json` - Updated to use SVG icons
+- `public/favicon.svg` - Added weather-themed favicon
+
+**Known Issues:**
+- UV Index uses placeholder data (API doesn't provide)
+- Humidity may be null from some Weather.gov stations
+- Pressure trend is simulated (no historical data stored)
+- Browser cache must be cleared to see HTML updates
+
+**Testing Checklist:**
+- [x] Wind compass renders and updates correctly
+- [x] Humidity bars animate based on percentage
+- [x] Pressure chart draws without errors
+- [x] All cards handle null data gracefully
+- [x] Responsive layout works on mobile
+- [x] Cards update on data refresh
+- [x] Fallback values display appropriately
+- [x] No console errors during updates

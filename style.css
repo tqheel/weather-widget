@@ -94,10 +94,180 @@ header h1 {
   font-weight: 400;
 }
 
+.feels-like {
+  font-size: 18px;
+  color: #64748b;
+  margin-top: -10px;
+  margin-bottom: 16px;
+}
+
 .conditions p {
   font-size: 20px;
   color: #64748b;
   margin: 8px 0;
+}
+
+.weather-details {
+  padding: 40px 24px;
+  background: #f8fafc;
+}
+
+.weather-details h3 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #1e40af;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.detail-card {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-label {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 36px;
+  font-weight: 700;
+  margin: auto 0;
+}
+
+.detail-info {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 8px;
+}
+
+.detail-trend {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 8px;
+}
+
+.detail-visual {
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+/* Wind compass */
+#wind-compass {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Humidity bars */
+.humidity-bars {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 60px;
+}
+
+.humidity-bar {
+  width: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.humidity-bar.active {
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+}
+
+/* UV Gauge */
+.uv-gauge {
+  position: relative;
+  width: 100px;
+  height: 50px;
+}
+
+.uv-arc {
+  width: 100px;
+  height: 50px;
+  border-radius: 100px 100px 0 0;
+  background: linear-gradient(90deg, 
+    #22c55e 0%, 
+    #eab308 25%, 
+    #f97316 50%, 
+    #ef4444 75%, 
+    #991b1b 100%);
+  position: relative;
+}
+
+.uv-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+/* Precipitation gauge */
+.precip-gauge {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 8px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Visibility bars */
+.visibility-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 140px;
+}
+
+.visibility-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.visibility-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e 0%, #3b82f6 100%);
+  border-radius: 3px;
+}
+
+/* Pressure chart */
+#pressure-chart {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .forecast {
