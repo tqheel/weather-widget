@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Real-time weather widget with radar">
+  <meta name="theme-color" content="#1e40af">
+  <link rel="manifest" href="/manifest.json">
+  <title>Weather Widget</title>
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <header>
+        <h1>Weather Widget</h1>
+        <button id="refresh-btn" title="Refresh weather data">↻</button>
+      </header>
+      
+      <div id="loading" class="loading">Loading location...</div>
+      <div id="error" class="error hidden"></div>
+      
+      <div id="weather-content" class="hidden">
+        <section class="current-weather">
+          <div class="location">
+            <h2 id="location-name">--</h2>
+          </div>
+          <div class="temperature">
+            <span id="temp" class="temp-value">--</span>
+            <span class="temp-unit">°F</span>
+          </div>
+          <div class="conditions">
+            <p id="conditions">--</p>
+            <p id="wind">--</p>
+          </div>
+        </section>
+
+        <section class="forecast">
+          <h3>Forecast</h3>
+          <div id="forecast-grid" class="forecast-grid"></div>
+        </section>
+
+        <section class="radar">
+          <h3>Weather Radar</h3>
+          <div id="radar-map" class="radar-map"></div>
+          <div class="radar-controls">
+            <button id="radar-play" class="radar-btn">▶ Play</button>
+            <input type="range" id="radar-timeline" min="0" max="0" value="0" class="radar-timeline">
+            <span id="radar-time" class="radar-time">--</span>
+          </div>
+        </section>
+
+        <section class="settings">
+          <h3>Settings</h3>
+          <label>
+            Auto-refresh interval (minutes):
+            <input type="number" id="refresh-interval" min="1" max="60" value="15">
+          </label>
+          <p class="cache-info">Data cached for 15 minutes</p>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
