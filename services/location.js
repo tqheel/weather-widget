@@ -31,26 +31,32 @@ export class LocationService {
 
   async getLocationFromIP() {
     // Using ip-api.com for IP geolocation (free, no API key required)
-    const response = await fetch('http://ip-api.com/json/?fields=status,message,lat,lon,city,region,country');
-    
-    if (!response.ok) {
-      throw new Error('IP geolocation service unavailable');
-    }
+    // Note: HTTPS requires paid plan, so we try browser geolocation first
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      
+      if (!response.ok) {
+        throw new Error('IP geolocation service unavailable');
+      }
 
-    const data = await response.json();
-    
-    if (data.status === 'fail') {
-      throw new Error(data.message || 'IP geolocation failed');
-    }
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.reason || 'IP geolocation failed');
+      }
 
-    return {
-      latitude: data.lat,
-      longitude: data.lon,
-      city: data.city,
-      region: data.region,
-      country: data.country,
-      name: `${data.city}, ${data.region}`
-    };
+      return {
+        latitude: data.latitude,
+        longitude: data.longitude,
+        city: data.city,
+        region: data.region,
+        country: data.country_name,
+        name: `${data.city}, ${data.region}`
+      };
+    } catch (error) {
+      console.warn('ipapi.co failed, trying browser geolocation:', error);
+      throw error;
+    }
   }
 
   async getLocationFromBrowser() {
