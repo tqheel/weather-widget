@@ -91,6 +91,13 @@ export class WeatherService {
     const obsData = await obsResponse.json();
     const props = obsData.properties;
     
+    // Log raw wind speed data for debugging
+    console.log('Raw wind data from Weather.gov:', {
+      windSpeed: props.windSpeed,
+      windDirection: props.windDirection,
+      windGust: props.windGust
+    });
+    
     // Calculate feels-like temperature
     const tempC = props.temperature.value;
     const tempF = this.celsiusToFahrenheit(tempC);
